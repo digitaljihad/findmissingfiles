@@ -3,14 +3,9 @@ setlocal enabledelayedexpansion
 
 REM Function to find missing files in a directory
 :find_missing_files
-echo Starting search in all subdirectories...
 for /r %%d in (.) do (
-    echo Checking directory: "%%d"
     pushd "%%d"
-    if errorlevel 1 (
-        echo Failed to change to directory: "%%d"
-        goto :skip_directory
-    )
+    if errorlevel 1 goto :skip_directory
     set "mp3_files="
     for %%f in (*.mp3) do (
         set "file_name=%%~nf"
@@ -31,7 +26,6 @@ goto :eof
 
 REM Function to check for missing files in a sequence
 :check_missing_files
-echo Analyzing directory: "%~1"
 set "directory=%~1"
 set "mp3_files=%~2"
 set "missing_files="
@@ -66,6 +60,5 @@ goto :eof
 
 REM Main execution
 cd /d "%~dp0"
-echo Starting scan...
 call :find_missing_files
 endlocal
