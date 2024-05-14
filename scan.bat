@@ -28,25 +28,28 @@ set "directory=%~1"
 set "mp3_files=%~2"
 set "missing_files="
 set "mp3_files=%mp3_files:,= %"
-set "array=0 %mp3_files%"
+
+set /a "start=100"
+set /a "end=0"
 
 for %%a in (%mp3_files%) do (
-    if not defined start (
-        set "start=%%a"
-    )
-    set "end=%%a"
+    set /a "num=%%a"
+    if !num! lss !start! set /a "start=%%a"
+    if !num! gtr !end! set /a "end=%%a"
 )
 
-for /l %%i in (%start%,1,%end%) do (
-    set "number=0%%i"
-    set "number=!number:~-2!"
-    if "!mp3_files!" not contain "!number!" (
-        set "missing_files=!missing_files! !number!"
+for /l %%i in (!start!,1,!end!) do (
+    set "found=0"
+    for %%j in (%mp3_files%) do (
+        if "%%i"=="%%j" set "found=1"
+    )
+    if !found! equ 0 (
+        set "missing_files=!missing_files!, %%i"
     )
 )
 
 if defined missing_files (
-    echo Missing files in directory %directory%: %missing_files: =, %
+    echo Missing files in directory %directory%: !missing_files:~2!
 )
 
 goto :eof
