@@ -4,22 +4,29 @@ setlocal enabledelayedexpansion
 REM Function to find missing files in a directory
 :find_missing_files
 for /d %%d in (*) do (
-    cd "%%d"
+    pushd "%%d"
     set "mp3_files="
     for %%f in (*.mp3) do (
         set "file_name=%%~nf"
         set "file_prefix=!file_name:~0,2!"
-        set "mp3_files=!mp3_files! !file_prefix!"
+        if "!file_prefix!" geq "00" if "!file_prefix!" leq "99" (
+            set "mp3_files=!mp3_files! !file_prefix!"
+        )
     )
 
     if defined mp3_files (
-        for /f "tokens=* delims= " %%a in ("!mp3_files!") do set "mp3_files=%%a"
+        for %%a in (!mp3_files!) do (
+            set "start=%%a"
+            goto :found_start
+        )
+        :found_start
+
+        for /f "tokens=*" %%a in ("!mp3_files!") do set "mp3_files=%%a"
         set "mp3_files=!mp3_files: =,!"
         call :check_missing_files "%%d" !mp3_files!
     )
-    cd ..
+    popd
 )
-
 goto :eof
 
 REM Function to check for missing files in a sequence
