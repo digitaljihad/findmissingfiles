@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 REM Function to find missing files in a directory
 :find_missing_files
-for /d %%d in (*) do (
+for /r %%d in (.) do (
     pushd "%%d"
     set "mp3_files="
     for %%f in (*.mp3) do (
@@ -15,13 +15,6 @@ for /d %%d in (*) do (
     )
 
     if defined mp3_files (
-        for %%a in (!mp3_files!) do (
-            set "start=%%a"
-            goto :found_start
-        )
-        :found_start
-
-        for /f "tokens=*" %%a in ("!mp3_files!") do set "mp3_files=%%a"
         set "mp3_files=!mp3_files: =,!"
         call :check_missing_files "%%d" !mp3_files!
     )
@@ -37,12 +30,11 @@ set "missing_files="
 set "mp3_files=%mp3_files:,= %"
 set "array=0 %mp3_files%"
 
-for /f "tokens=1,2 delims= " %%a in ("%array%") do (
-    if "%%b"=="" (
+for %%a in (%mp3_files%) do (
+    if not defined start (
         set "start=%%a"
-    ) else (
-        set "end=%%b"
     )
+    set "end=%%a"
 )
 
 for /l %%i in (%start%,1,%end%) do (
