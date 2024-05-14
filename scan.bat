@@ -37,10 +37,10 @@ set "mp3_files=%~2"
 set "missing_files="
 set "mp3_files=%mp3_files:,= %"
 
+set /a "start=100"
+set /a "end=0"
+
 for %%a in (%mp3_files%) do (
-    if not defined start (
-        set "start=%%a"
-    )
     set /a "num=%%a"
     if !num! lss !start! set "start=%%a"
     if !num! gtr !end! set "end=%%a"
@@ -48,8 +48,10 @@ for %%a in (%mp3_files%) do (
 
 for /l %%i in (!start!,1,!end!) do (
     set "found=0"
+    set "number=0%%i"
+    set "number=!number:~-2!"
     for %%j in (%mp3_files%) do (
-        if "%%i"=="%%j" set "found=1"
+        if "!number!"=="%%j" set "found=1"
     )
     if !found! equ 0 (
         set "missing_files=!missing_files!, %%i"
