@@ -5,10 +5,10 @@ REM Function to find missing files in a directory
 :find_missing_files
 echo Starting search in all subdirectories...
 for /r %%d in (.) do (
-    echo Checking directory: %%d
+    echo Checking directory: "%%d"
     pushd "%%d"
     if errorlevel 1 (
-        echo Failed to change to directory: %%d
+        echo Failed to change to directory: "%%d"
         goto :skip_directory
     )
     set "mp3_files="
@@ -31,19 +31,19 @@ goto :eof
 
 REM Function to check for missing files in a sequence
 :check_missing_files
-echo Analyzing directory: %~1
+echo Analyzing directory: "%~1"
 set "directory=%~1"
 set "mp3_files=%~2"
 set "missing_files="
 set "mp3_files=%mp3_files:,= %"
 
-set /a "start=100"
-set /a "end=0"
-
 for %%a in (%mp3_files%) do (
+    if not defined start (
+        set "start=%%a"
+    )
     set /a "num=%%a"
-    if !num! lss !start! set /a "start=%%a"
-    if !num! gtr !end! set /a "end=%%a"
+    if !num! lss !start! set "start=%%a"
+    if !num! gtr !end! set "end=%%a"
 )
 
 for /l %%i in (!start!,1,!end!) do (
@@ -57,7 +57,7 @@ for /l %%i in (!start!,1,!end!) do (
 )
 
 if defined missing_files (
-    echo Missing files in directory %directory%: !missing_files:~2!
+    echo Missing files in directory "%directory%": !missing_files:~2!
 )
 
 goto :eof
